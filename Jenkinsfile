@@ -16,22 +16,22 @@ pipeline {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
-                    // List all files and directories with detailed info
+                    # List all files and directories with detailed info
                     ls -la
                     
-                    // Display the installed Node.js version
+                    # Display the installed Node.js version
                     node --version
                     
-                    // Display the installed npm version
+                    # Display the installed npm version
                     npm --version
                     
-                    // Install dependencies based on package-lock.json
+                    # Install dependencies based on package-lock.json
                     npm ci
                     
-                    // Run the build script defined in package.json
+                    # Run the build script defined in package.json
                     npm run build
                     
-                    // List files again to check the build output
+                    # List files again to check the build output
                     ls -la
                     '''
                 }
@@ -51,10 +51,10 @@ pipeline {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
-                    // Check if index.html exists in the build directory
+                    # Check if index.html exists in the build directory
                     test -f build/index.html
 
-                    // Run tests defined in package.json
+                    # Run tests defined in package.json
                     npm test
                     '''
                 }
@@ -74,16 +74,16 @@ pipeline {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
-                    // Install the serve package globally to serve the build output
-                    npm install -g serve
+                    # Install the serve package globally to serve the build output
+                    npm install serve
                     
-                    // Serve the build directory and run it in the background
+                    # Serve the build directory and run it in the background
                     node_modules/.bin/serve -s build &
                     
-                    // Wait for 10 seconds to ensure the server starts up
+                    # Wait for 10 seconds to ensure the server starts up
                     sleep 10
                     
-                    // Run end-to-end tests with Playwright
+                    # Run end-to-end tests with Playwright
                     npx playwright test
                     '''
                 }
