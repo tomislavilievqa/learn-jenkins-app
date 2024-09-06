@@ -33,6 +33,15 @@ pipeline {
             steps {
                 script {
                     sh '''
+                    # Verify if index.html exists in the build directory
+                    if [ -f build/index.html ]; then
+                        echo "index.html file exists."
+                    else
+                        echo "index.html file is missing!"
+                        exit 1
+                    fi
+
+                    # Run npm tests
                     npm test
                     '''
                 }
