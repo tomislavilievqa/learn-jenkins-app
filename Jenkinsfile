@@ -66,7 +66,7 @@ pipeline {
             agent {
                 // Use a Docker container with Playwright (version 1.47.0) for this stage.
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.47.0-noble'
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true // Reuse the same agent node for the Docker container.
                 }
             }
