@@ -38,10 +38,10 @@ pipeline {
             }
         }
 
-        stage('Run Tests'){
+        stage('Tests'){
             parallel {
             // Test stage: This stage is for running tests.
-                    stage('Test stage') {
+                    stage('Unit Tests') {
                         agent {
                             // Use a Docker container with Node.js 18 (Alpine version) for this stage.
                             docker {
@@ -59,6 +59,12 @@ pipeline {
                                 # Run tests defined in package.json
                                 npm test
                                 '''
+                            }
+                        }
+                        post {
+                            always {
+                                // Publish JUnit test results regardless of the build outcome
+                                junit 'jest-results/junit.xml'
                             }
                         }
                     }
@@ -90,17 +96,17 @@ pipeline {
                                 '''
                             }
                         }
+                         post {
+                            always {
+                                // Publish JUnit test results regardless of the build outcome
+                                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
+                            }
+                        }
                     }       
             }
         }
         
     }
 
-    post {
-        always {
-            // Publish JUnit test results regardless of the build outcome
-            junit 'jest-results/junit.xml'
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-        }
-    }
+
 }
