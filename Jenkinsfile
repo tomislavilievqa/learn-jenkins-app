@@ -84,7 +84,7 @@ pipeline {
                     sleep 10
                     
                     # Run end-to-end tests with Playwright
-                    npx playwright test
+                    npx playwright test --reporter=html
                     '''
                 }
             }
