@@ -114,7 +114,29 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Staging') {
+            agent {
+                // Use a Docker container with Node.js 18 (Alpine version) for this stage.
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true // Reuse the same agent node for the Docker container.
+                }
+            }
+            steps {
+                    // Run a series of shell commands inside the Docker container.               
+                   sh '''
+                   npm install netlify-cli
+                   node_modules/.bin/netlify -- version
+                   echo "Deploying to production. Side ID: $NETLIFY_SITE_ID"
+                   node_modules/.bin/netlify status
+                   
+                   # Deploying the build folder to production
+                   node_modules/.bin/netlify deploy --dir=build 
+                    '''             
+            }
+        }
+
+        stage('Deploy Production') {
             agent {
                 // Use a Docker container with Node.js 18 (Alpine version) for this stage.
                 docker {
