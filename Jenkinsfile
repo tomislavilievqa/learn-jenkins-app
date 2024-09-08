@@ -106,7 +106,7 @@ pipeline {
                             // Publish Playwright HTML report regardless of the build outcome
                             publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, 
                                 reportDir: 'playwright-report', reportFiles: 'index.html', 
-                                reportName: 'Playwright HTML Report', reportTitles: '', 
+                                reportName: 'Playwright Local Report', reportTitles: '', 
                                 useWrapperFileDirectly: true])
                         }
                     }
@@ -137,5 +137,42 @@ pipeline {
                     '''             
             }
         }
+
+        stage('Production E2E') {
+            agent {
+                // Use a Docker container with Playwright (version 1.47.0) for this stage.
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true // Reuse the same agent node for the Docker container.
+                }
+            }
+
+            environment {
+                CI_ENVIRONMENT_URL = 'https://kaleidoscopic-entremet-8e2fea.netlify.app'
+            }
+
+            steps {
+                script {
+                    // Run a series of shell commands inside the Docker container.
+                    sh '''
+                    npx playwright test --reporter=html
+                    '''
+                }
+            }
+            post {
+                always {
+                    // Publish Playwright HTML report regardless of the build outcome
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, 
+                        reportDir: 'playwright-report', reportFiles: 'index.html', 
+                        reportName: 'Playwright Production E2E Report', reportTitles: '', 
+                        useWrapperFileDirectly: true])
+                }
+            }
+        }
+
+        
+
+
+
     }
 }
