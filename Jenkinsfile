@@ -130,7 +130,9 @@ pipeline {
                    node_modules/.bin/netlify --version
                    echo "Deploying to production. Side ID: $NETLIFY_SITE_ID"
                    node_modules/.bin/netlify status
-
+                   
+                   # Deploying the build folder to production
+                   node_modules/.bin/netlify deploy --dir=build --prod 
                     '''             
             }
         }
