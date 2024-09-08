@@ -125,6 +125,7 @@ pipeline {
             steps {
                     // Run a series of shell commands inside the Docker container.               
                    sh '''
+                   echo 'Small change'
                    npm install netlify-cli
                    node_modules/.bin/netlify
                    node_modules/.bin/netlify --version
