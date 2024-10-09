@@ -1,5 +1,9 @@
 pipeline {
-    // Define the agent where the pipeline will run.
+    // Define the agent where the pipeline will run. 
+    //agent any: The entire pipeline (or a stage) can run on any available agent.
+    //Purpose: Specifies that the pipeline can run on any available Jenkins agent (also referred to as a "node"). 
+    //In Jenkins, agents are machines or environments where builds can be executed.
+    //This means that the pipeline will execute on any node, whether it's a physical machine, virtual machine, or container that Jenkins has access to.
     agent any
 
     environment{
@@ -10,11 +14,18 @@ pipeline {
     stages {
         // Build stage: This stage is responsible for building the project.
         stage('Build stage') {
+            //Allows you to define more specific details about the environment or agent on which a stage will run.
+            //This specifies that the "Build stage" should run in a Docker container that uses the node:18-alpine image.
             agent {
                 // Use a Docker container with Node.js 18 (Alpine version) for this stage.
                 docker {
                     image 'node:18-alpine'
-                    reuseNode true // Reuse the same agent node for the Docker container.
+                    //Here, Jenkins will run the Docker container on the same node that was used to initiate the stage, 
+                    //reusing the workspace and other configurations already set up on that node.
+                    //Explanation: When using Docker as an agent, typically, Jenkins starts a new Docker container and runs all the steps in that container. 
+                    //By setting reuseNode true, Jenkins reuses the same underlying Jenkins node (or machine) to host the Docker container. 
+                    //This avoids setting up a new environment from scratch each time a new container is started, which can save time and resources.
+                    reuseNode true
                 }
             }
             steps {
@@ -127,12 +138,20 @@ pipeline {
                    sh '''
                    npm install netlify-cli
                    node_modules/.bin/netlify -- version
-                   echo "Deploying to production. Side ID: $NETLIFY_SITE_ID"
+                   echo "Deploying to staging. Side ID: $NETLIFY_SITE_ID"
                    node_modules/.bin/netlify status
                    
                    # Deploying the build folder to production
                    node_modules/.bin/netlify deploy --dir=build 
                     '''             
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    input message: 'Ready for deploy?', ok: 'Yes, it is ready to be deployed!'
+                }
             }
         }
 
