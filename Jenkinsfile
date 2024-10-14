@@ -154,7 +154,11 @@ pipeline {
                         # which is saved to a file named deploy-output.json.
                         node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
                         # Uses node-jq to parse the deploy-output.json file and extract the value of the deploy_url field, which represents the URL of the newly deployed site.
-                        CI_ENVIRONMENT_URL = $(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+                        # Parse the deployment URL using node-jq and set it to CI_ENVIRONMENT_URL without spaces.
+                        export CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+    
+                        # Output the deployment URL for debugging purposes
+                        echo "CI_ENVIRONMENT_URL is set to: $CI_ENVIRONMENT_URL"
                         # Now that CI_ENVIRONMENT_URL is updated with the correct staging URL, 
                         # run Playwright tests against the deployed staging site.
                         npx playwright test --reporter=html
