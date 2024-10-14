@@ -151,7 +151,7 @@ pipeline {
                         # Deploy the build folder to staging and capture the deployment URL.
                         # The --json flag outputs the deployment details, including the URL, in JSON format.
                         node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                        CI_ENVIRONMENT_URL = $(node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json)
+                        CI_ENVIRONMENT_URL = $(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
                         # Now that CI_ENVIRONMENT_URL is updated with the correct staging URL, 
                         # run Playwright tests against the deployed staging site.
                         npx playwright test --reporter=html
