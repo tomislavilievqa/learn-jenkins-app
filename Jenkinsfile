@@ -134,7 +134,7 @@ pipeline {
                 }
             }
             
-            //it should have a value due to the playwright.config
+            // Set a default value for CI_ENVIRONMENT_URL. It will later be updated with the staging URL.
             environment {
                 CI_ENVIRONMENT_URL = "DEFAULT_VALUE"
             }
@@ -144,14 +144,19 @@ pipeline {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
                         npm install netlify-cli node-jq
-                        node_modules/.bin/netlify -- version
-                        echo "Deploying to staging. Side ID: $NETLIFY_SITE_ID"
-                        node_modules/.bin/netlify status               
-                        # Deploying the build folder to production
+                        node_modules/.bin/netlify --version
+                        echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
+                        node_modules/.bin/netlify status
+
+                        # Deploy the build folder to staging and capture the deployment URL.
+                        # The --json flag outputs the deployment details, including the URL, in JSON format.
                         CI_ENVIRONMENT_URL = $("node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json")
+                        # Now that CI_ENVIRONMENT_URL is updated with the correct staging URL, 
+                        # run Playwright tests against the deployed staging site.
                         npx playwright test --reporter=html
                     '''
                 }
+            }
             }
             post {
                 always {
