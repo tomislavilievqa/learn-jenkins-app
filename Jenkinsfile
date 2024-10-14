@@ -127,49 +127,28 @@ pipeline {
 
         stage('Deploy Staging') {
             agent {
-                // Use a Docker container with Node.js 18 (Alpine version) for this stage.
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true // Reuse the same agent node for the Docker container.
-                }
-            }
-            steps {
-                    // Run a series of shell commands inside the Docker container.               
-                   sh '''
-                   npm install netlify-cli node-jq
-                   node_modules/.bin/netlify -- version
-                   echo "Deploying to staging. Side ID: $NETLIFY_SITE_ID"
-                   node_modules/.bin/netlify status
-                   
-                   # Deploying the build folder to production
-                   node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                   
-                    '''    
-                script {
-                env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true) 
-                }         
-            }
-
-
-        }
-
-        stage('Staging E2E') {
-            agent {
                 // Use a Docker container with Playwright (version 1.47.0) for this stage.
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true // Reuse the same agent node for the Docker container.
                 }
             }
-
+            
+            //it should have a value due to the playwright.config
             environment {
-                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+                CI_ENVIRONMENT_URL = "DEFAULT_VALUE"
             }
 
             steps {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
+                        npm install netlify-cli node-jq
+                        node_modules/.bin/netlify -- version
+                        echo "Deploying to staging. Side ID: $NETLIFY_SITE_ID"
+                        node_modules/.bin/netlify status               
+                        # Deploying the build folder to production
+                        CI_ENVIRONMENT_URL = $("node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json")
                         npx playwright test --reporter=html
                     '''
                 }
