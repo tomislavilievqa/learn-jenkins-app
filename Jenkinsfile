@@ -142,9 +142,46 @@ pipeline {
                    node_modules/.bin/netlify status
                    
                    # Deploying the build folder to production
-                   node_modules/.bin/netlify deploy --dir=build -json > deploy-output.json
-                   node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json
-                    '''             
+                   node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                   
+                    '''    
+                script {
+                env.STAGING_URL = sh(script: "node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json", returnStdout: true) 
+                }         
+            }
+
+
+        }
+
+        stage('Staging E2E') {
+            agent {
+                // Use a Docker container with Playwright (version 1.47.0) for this stage.
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true // Reuse the same agent node for the Docker container.
+                }
+            }
+
+            environment {
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
+            }
+
+            steps {
+                script {
+                    // Run a series of shell commands inside the Docker container.
+                    sh '''
+                    npx playwright test --reporter=html
+                    '''
+                }
+            }
+            post {
+                always {
+                    // Publish Playwright HTML report regardless of the build outcome
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, 
+                        reportDir: 'playwright-report', reportFiles: 'index.html', 
+                        reportName: 'Playwright Staging E2E Report', reportTitles: '', 
+                        useWrapperFileDirectly: true])
+                }
             }
         }
 
