@@ -136,7 +136,7 @@ pipeline {
             
             // Set a default value for CI_ENVIRONMENT_URL. It will later be updated with the staging URL.
             environment {
-                CI_ENVIRONMENT_URL = "DEFAULT_VALUE"
+                CI_ENVIRONMENT_URL = 'DEFAULT_VALUE'
             }
 
             steps {
