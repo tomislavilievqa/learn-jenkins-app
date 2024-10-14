@@ -157,7 +157,7 @@ pipeline {
                     '''
                 }
             }
-            }
+            
             post {
                 always {
                     // Publish Playwright HTML report regardless of the build outcome
@@ -186,6 +186,7 @@ pipeline {
                 }
             }
 
+                // Set the URL for the production environment, which will be used by Playwright.
             environment {
                 CI_ENVIRONMENT_URL = 'https://kaleidoscopic-entremet-8e2fea.netlify.app'
             }
@@ -222,3 +223,4 @@ pipeline {
 
     }
 }
+
