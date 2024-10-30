@@ -96,7 +96,7 @@ pipeline {
                     agent {
                         // Use a Docker container with Playwright (version 1.47.0) for this stage.
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                            image 'my-playwright'
                             reuseNode true // Reuse the same agent node for the Docker container.
                         }
                     }
@@ -135,7 +135,7 @@ pipeline {
             agent {
                 // Use a Docker container with Playwright (version 1.47.0) for this stage.
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true // Reuse the same agent node for the Docker container.
                 }
             }
@@ -149,19 +149,18 @@ pipeline {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
-                        npm install netlify-cli node-jq
-                        node_modules/.bin/netlify --version
+                        netlify --version
                         echo "Deploying to staging. Site ID: $NETLIFY_SITE_ID"
-                        node_modules/.bin/netlify status
+                        netlify status
 
                         # Deploy the build folder to staging and capture the deployment URL.
                         # Deploys the contents of the build directory to the staging environment on Netlify. 
                         # The --json flag outputs the details of the deployment (including the deployment URL) in JSON format, 
                         # which is saved to a file named deploy-output.json.
-                        node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                        netlify deploy --dir=build --json > deploy-output.json
                         # Uses node-jq to parse the deploy-output.json file and extract the value of the deploy_url field, which represents the URL of the newly deployed site.
                         # Parse the deployment URL using node-jq and set it to CI_ENVIRONMENT_URL without spaces.
-                        export CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url' deploy-output.json)
+                        export CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
     
                         # Output the deployment URL for debugging purposes
                         echo "CI_ENVIRONMENT_URL is set to: $CI_ENVIRONMENT_URL"
@@ -187,7 +186,7 @@ pipeline {
             agent {
                 // Use a Docker container with Playwright (version 1.47.0) for this stage.
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    image 'my-playwright'
                     reuseNode true // Reuse the same agent node for the Docker container.
                 }
             }
@@ -201,13 +200,12 @@ pipeline {
                 script {
                     // Run a series of shell commands inside the Docker container.
                     sh '''
-                        npm install netlify-cli
-                        node_modules/.bin/netlify
-                        node_modules/.bin/netlify --version
+                        netlify
+                        netlify --version
                         echo "Deploying to production. Side ID: $NETLIFY_SITE_ID"
-                        node_modules/.bin/netlify status
+                        netlify status
                         # Deploying the build folder to production
-                        node_modules/.bin/netlify deploy --dir=build --prod 
+                        netlify deploy --dir=build --prod 
                         npx playwright test --reporter=html
                     '''
                 }
