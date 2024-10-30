@@ -13,6 +13,11 @@ pipeline {
     }
 
     stages {
+        stage('Docker') {
+            steps{
+                sh 'docker build -t my-playwright .'
+            }
+        }
         // Build stage: This stage is responsible for building the project.
         stage('Build stage') {
             //Allows you to define more specific details about the environment or agent on which a stage will run.
