@@ -13,14 +13,6 @@ pipeline {
     }
 
     stages {
-        stage('Docker') {
-        // Specify the steps to be executed in this stage
-            steps {
-                // Run a shell command to build the Docker image with the tag 'my-playwright'
-                // '.' refers to the current directory where the Dockerfile is located
-                sh 'docker build -t my-playwright .'
-            }
-        }
         // Build stage: This stage is responsible for building the project.
         stage('Build stage') {
             //Allows you to define more specific details about the environment or agent on which a stage will run.
