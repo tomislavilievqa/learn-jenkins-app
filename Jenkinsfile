@@ -14,7 +14,10 @@ pipeline {
 
     stages {
         stage('Docker') {
-            steps{
+        // Specify the steps to be executed in this stage
+            steps {
+                // Run a shell command to build the Docker image with the tag 'my-playwright'
+                // '.' refers to the current directory where the Dockerfile is located
                 sh 'docker build -t my-playwright .'
             }
         }
@@ -104,11 +107,8 @@ pipeline {
                         script {
                             // Run a series of shell commands inside the Docker container.
                             sh '''
-                            # Install the serve package globally to serve the build output
-                            npm install serve
-
                             # Serve the build directory and run it in the background
-                            node_modules/.bin/serve -s build &
+                            serve -s build &
 
                             # Wait for 10 seconds to ensure the server starts up
                             sleep 10
