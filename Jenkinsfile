@@ -22,9 +22,11 @@ pipeline {
                     reuseNode true
                 }
                 steps {
+                    scrpit {
                     sh '''
                     aws --version
                     '''
+                    }
                 }
             }
         }
