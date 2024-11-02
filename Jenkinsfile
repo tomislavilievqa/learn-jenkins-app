@@ -23,7 +23,7 @@ pipeline {
                 }
             }
             steps {
-                scrpit {
+                script {
                 sh '''
                 aws --version
                 '''
