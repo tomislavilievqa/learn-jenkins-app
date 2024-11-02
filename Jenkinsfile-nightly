@@ -3,8 +3,11 @@ pipeline {
     agent any
 
     stages {
+        //The nightly job builds the Docker image (my-playwright) by the Dockerfile and then pushes it to a shared Docker registry (e.g., Docker Hub, AWS ECR, or a private registry).
+        //When the CI/CD pipeline runs, it pulls the pre-built my-playwright image from the registry.
         stage('Build Docker Image') {
             steps {
+                // Here, the docker build command is run with the -t flag to tag the built image as my-playwright
                 sh 'docker build -t my-playwright .'
             }
         }
