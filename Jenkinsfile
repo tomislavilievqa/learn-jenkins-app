@@ -21,12 +21,12 @@ pipeline {
                     args "entrypoint=''"
                     reuseNode true
                 }
-                steps {
-                    scrpit {
-                    sh '''
-                    aws --version
-                    '''
-                    }
+            }
+            steps {
+                scrpit {
+                sh '''
+                aws --version
+                '''
                 }
             }
         }
@@ -71,7 +71,6 @@ pipeline {
                 }
             }
         }
-
         stage('Tests') {
             parallel {
                 // Unit Tests stage: This stage is for running unit tests.
