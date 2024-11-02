@@ -13,18 +13,18 @@ pipeline {
     }
 
     stages {
-        stage ('AWS'){
-            agent{
-                docker{
-                    image 'amazon/aws-cli'
-                }
-                steps {
-                    sh '''
-                    aws --version
-                    '''
-                }
-            }
-        }
+        // stage ('AWS'){
+        //     agent{
+        //         docker{
+        //             image 'amazon/aws-cli'
+        //         }
+        //         steps {
+        //             sh '''
+        //             aws --version
+        //             '''
+        //         }
+        //     }
+        // }
         // Build stage: This stage is responsible for building the project.
         stage('Build stage') {
             //Allows you to define more specific details about the environment or agent on which a stage will run.
